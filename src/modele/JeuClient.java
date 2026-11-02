@@ -1,18 +1,23 @@
 package modele;
+import controleur.Controle;
+import outils.connexion.Connection;
 /**
  * Gestion du jeu côté client
  *
  */
 public class JeuClient extends Jeu {
+	private Connection connectionServeur;
 	
 	/**
 	 * Controleur
 	 */
-	public JeuClient() {
+	public JeuClient(Controle controle) {
+		this.controle = controle;
 	}
 	
 	@Override
-	public void connexion() {
+	public void connexion(Connection connection) {
+		this.connectionServeur = connection;
 	}
 
 	@Override

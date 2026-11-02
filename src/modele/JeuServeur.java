@@ -1,5 +1,8 @@
 package modele;
 import java.util.ArrayList;
+import controleur.Controle;
+import java.util.Hashtable;
+import outils.connexion.Connection;
 
 /**
  * Gestion du jeu côté serveur
@@ -14,16 +17,18 @@ public class JeuServeur extends Jeu {
 	/**
 	 * Collection de joueurs
 	 */
-	private ArrayList<Joueur> lesJoueurs = new ArrayList<Joueur>() ;
+	private Hashtable<Connection, Joueur> lesJoueurs = new Hashtable<Connection, Joueur>() ;
 	
 	/**
 	 * Constructeur
 	 */
-	public JeuServeur() {
+	public JeuServeur(Controle controle) {
+		this.controle = controle;
 	}
 	
 	@Override
-	public void connexion() {
+	public void connexion(Connection connection) {
+		this.lesJoueurs.put(connection, new Joueur());
 	}
 
 	@Override

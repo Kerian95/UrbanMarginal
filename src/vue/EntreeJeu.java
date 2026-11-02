@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import controleur.Controle;
 
 public class EntreeJeu extends JFrame {
 
@@ -18,23 +19,20 @@ public class EntreeJeu extends JFrame {
 	private JTextField txtIp;
 	private Arene frmArene;
 	private ChoixJoueur frmChoixJoueur;
+	private Controle controle;
 
 	/**
 	 * Clic sur le bouton Start
 	 */
 	private void btnStart_clic() {
-		this.frmArene = new Arene();
-		this.frmArene.setVisible(true);
-		this.dispose();
+		this.controle.evenementEntreeJeu("serveur");
 	}
 
 	/**
 	 * Clic sur le bouton Connect
 	 */
 	private void btnConnect_clic() {
-		this.frmChoixJoueur = new ChoixJoueur();
-		this.frmChoixJoueur.setVisible(true);
-		this.dispose();
+		this.controle.evenementEntreeJeu(this.txtIp.getText());
 	}
 	
 	/**
@@ -47,7 +45,7 @@ public class EntreeJeu extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public EntreeJeu() {
+	public EntreeJeu(Controle controle) {
 		setTitle("Urban Marginal");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,6 +87,7 @@ public class EntreeJeu extends JFrame {
 				btnConnect_clic();
 			}
 		});
+		
 		btnConnect.setBounds(148, 36, 89, 23);
 		contentPane.add(btnConnect);
 		
@@ -100,5 +99,6 @@ public class EntreeJeu extends JFrame {
 		});
 		btnExit.setBounds(218, 86, 58, 23);
 		contentPane.add(btnExit);
+		this.controle = controle;
 	}
 }
