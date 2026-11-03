@@ -2,6 +2,9 @@ package modele;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import javax.swing.JLabel;
+
 import controleur.Controle;
 import controleur.Global;
 import outils.connexion.Connection;
@@ -29,7 +32,7 @@ public class JeuServeur extends Jeu implements Global {
 
 	@Override
 	public void connexion(Connection connection) {
-		this.lesJoueurs.put(connection, new Joueur());
+		this.lesJoueurs.put(connection, new Joueur(this));
 	}
 
 	@Override
@@ -41,7 +44,14 @@ public class JeuServeur extends Jeu implements Global {
 			this.controle.evenementJeuServeur(AJOUTPANELMURS, connection);
 			String pseudo = message[1];
 			Integer numPerso = Integer.parseInt(message[2]);
-			this.lesJoueurs.get(connection).initPerso(pseudo, numPerso);
+			this.lesJoueurs.get(connection).initPerso(pseudo, numPerso, this.lesJoueurs.values(), this.lesMurs);
+			// annonce de l'arrivée dans le tchat
+			String arrivee = "*** " + pseudo + " vient de se connecter ***";
+			this.controle.evenementJeuServeur(AJOUTPHRASE, arrivee);
+			break;
+		case TCHAT:
+			String phrase = this.lesJoueurs.get(connection).getPseudo() + " > " + message[1];
+			this.controle.evenementJeuServeur(AJOUTPHRASE, phrase);
 			break;
 		}
 	}
@@ -52,8 +62,31 @@ public class JeuServeur extends Jeu implements Global {
 
 	/**
 	 * Envoi d'une information vers tous les clients
+	 * 
+	 * @param info information à envoyer
 	 */
-	public void envoi() {
+	public void envoi(Object info) {
+		for (Connection connection : this.lesJoueurs.keySet()) {
+			super.envoi(connection, info);
+		}
+	}
+
+	/**
+	 * Demande d'ajout d'un label (joueur, message...) dans l'arène du serveur
+	 * 
+	 * @param jLabel label à ajouter
+	 */
+	public void ajoutJLabelJeuArene(JLabel jLabel) {
+		this.controle.evenementJeuServeur(AJOUTJLABELJEU, jLabel);
+	}
+
+	/**
+	 * Envoi du panel du jeu à tous les joueurs
+	 */
+	public void envoiJeuATous() {
+		for (Connection connection : this.lesJoueurs.keySet()) {
+			this.controle.evenementJeuServeur(MODIFPANELJEU, connection);
+		}
 	}
 
 	/**

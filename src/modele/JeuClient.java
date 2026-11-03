@@ -1,6 +1,7 @@
 package modele;
 
 import javax.swing.JPanel;
+
 import controleur.Controle;
 import controleur.Global;
 import outils.connexion.Connection;
@@ -10,6 +11,10 @@ import outils.connexion.Connection;
  */
 public class JeuClient extends Jeu implements Global {
 	private Connection connectionServeur;
+	/**
+	 * vrai si le panel des murs a déjà été reçu
+	 */
+	private boolean mursOk = false;
 
 	/**
 	 * Constructeur
@@ -26,7 +31,16 @@ public class JeuClient extends Jeu implements Global {
 	@Override
 	public void reception(Connection connection, Object info) {
 		if (info instanceof JPanel) {
-			this.controle.evenementJeuClient(AJOUTPANELMURS, info);
+			if (!this.mursOk) {
+				// premier panel reçu : les murs
+				this.controle.evenementJeuClient(AJOUTPANELMURS, info);
+				this.mursOk = true;
+			} else {
+				// panels suivants : le jeu
+				this.controle.evenementJeuClient(MODIFPANELJEU, info);
+			}
+		} else if (info instanceof String) {
+			this.controle.evenementJeuClient(MODIFTCHAT, info);
 		}
 	}
 

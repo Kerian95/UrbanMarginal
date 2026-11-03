@@ -1,5 +1,6 @@
 package controleur;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import vue.EntreeJeu;
@@ -29,7 +30,6 @@ public class Controle implements AsyncResponse, Global {
 
 	/**
 	 * Événement provenant de la frame EntreeJeu
-	 * 
 	 * @param info "serveur" si Start, ou l'IP si Connect
 	 */
 	public void evenementEntreeJeu(String info) {
@@ -37,7 +37,7 @@ public class Controle implements AsyncResponse, Global {
 			new ServeurSocket(this, PORT);
 			this.leJeu = new JeuServeur(this);
 			this.frmEntreeJeu.dispose();
-			this.frmArene = new Arene();
+			this.frmArene = new Arene(this, SERVEUR);
 			((JeuServeur) this.leJeu).constructionMurs();
 			this.frmArene.setVisible(true);
 		} else {
@@ -47,7 +47,6 @@ public class Controle implements AsyncResponse, Global {
 
 	/**
 	 * Événement provenant de la frame ChoixJoueur
-	 * 
 	 * @param pseudo   pseudo saisi
 	 * @param numPerso numéro du personnage choisi
 	 */
@@ -58,8 +57,15 @@ public class Controle implements AsyncResponse, Global {
 	}
 
 	/**
+	 * Événement provenant de la frame Arene (phrase saisie dans le tchat)
+	 * @param info phrase saisie
+	 */
+	public void evenementArene(String info) {
+		((JeuClient) this.leJeu).envoi(TCHAT + SEPARATOR + info);
+	}
+
+	/**
 	 * Événement provenant de JeuServeur
-	 * 
 	 * @param ordre ce qu'il faut faire
 	 * @param info  information à traiter
 	 */
@@ -68,26 +74,35 @@ public class Controle implements AsyncResponse, Global {
 			this.frmArene.ajoutMurs(info);
 		} else if (ordre.equals(AJOUTPANELMURS)) {
 			this.leJeu.envoi((Connection) info, this.frmArene.getJpnMurs());
+		} else if (ordre.equals(AJOUTJLABELJEU)) {
+			this.frmArene.ajoutJLabelJeu((JLabel) info);
+		} else if (ordre.equals(MODIFPANELJEU)) {
+			this.leJeu.envoi((Connection) info, this.frmArene.getJpnJeu());
+		} else if (ordre.equals(AJOUTPHRASE)) {
+			this.frmArene.ajoutTchat((String) info);
+			((JeuServeur) this.leJeu).envoi(this.frmArene.getTxtChat());
 		}
 	}
 
 	/**
 	 * Événement provenant de JeuClient
-	 * 
 	 * @param ordre ce qu'il faut faire
 	 * @param info  information à traiter
 	 */
 	public void evenementJeuClient(String ordre, Object info) {
 		if (ordre.equals(AJOUTPANELMURS)) {
 			this.frmArene.setJpnMurs((JPanel) info);
+		} else if (ordre.equals(MODIFPANELJEU)) {
+			this.frmArene.setJpnJeu((JPanel) info);
+		} else if (ordre.equals(MODIFTCHAT)) {
+			this.frmArene.setTxtChat((String) info);
 		}
 	}
 
 	/**
 	 * Envoi d'une information vers l'ordinateur distant
-	 * 
 	 * @param connection connexion vers l'ordinateur distant
-	 * @param info       information à envoyer
+	 * @param info information à envoyer
 	 */
 	public void envoi(Connection connection, Object info) {
 		connection.envoi(info);
@@ -95,7 +110,6 @@ public class Controle implements AsyncResponse, Global {
 
 	/**
 	 * Méthode d'entrée dans l'application
-	 * 
 	 * @param args non utilisé
 	 */
 	public static void main(String[] args) {
@@ -108,7 +122,7 @@ public class Controle implements AsyncResponse, Global {
 		case "connexion":
 			if (!(this.leJeu instanceof JeuServeur)) {
 				this.frmEntreeJeu.dispose();
-				this.frmArene = new Arene();
+				this.frmArene = new Arene(this, CLIENT);
 				this.frmChoixJoueur = new ChoixJoueur(this);
 				this.frmChoixJoueur.setVisible(true);
 				this.leJeu = new JeuClient(this);
