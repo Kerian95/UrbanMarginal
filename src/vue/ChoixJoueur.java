@@ -1,34 +1,31 @@
 package vue;
 
-import java.awt.EventQueue;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.Color;
-import java.awt.Dimension;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JSpinner;
-import controleur.Controle;
-import javax.swing.SwingConstants;
-import java.awt.Cursor;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
-public class ChoixJoueur extends JFrame {
+import controleur.Controle;
+import controleur.Global;
+
+public class ChoixJoueur extends JFrame implements Global {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtPseudo;
-	private Arene frmArene;
 	private Controle controle;
 	private JLabel lblPersonnage;
 	private int numPerso = 1;
-	private static final int MAXPERSO = 3;
 
 	/**
 	 * Clic sur la flèche précédent
@@ -53,7 +50,7 @@ public class ChoixJoueur extends JFrame {
 	}
 
 	/**
-	 * Clic sur GO : ouvre l'arène
+	 * Clic sur GO : envoie le pseudo et le perso au contrôleur
 	 */
 	private void lblGo_clic() {
 		if (this.txtPseudo.getText().equals("")) {
@@ -68,7 +65,7 @@ public class ChoixJoueur extends JFrame {
 	 * Affichage du personnage dans la zone prévue
 	 */
 	private void affichePerso() {
-		String chemin = "personnages/perso" + this.numPerso + "marche1d1.gif";
+		String chemin = CHEMINPERSONNAGES + PERSO + this.numPerso + MARCHE + 1 + "d" + 1 + EXTFICHIERPERSO;
 		URL resource = getClass().getClassLoader().getResource(chemin);
 		this.lblPersonnage.setIcon(new ImageIcon(resource));
 	}
@@ -89,6 +86,7 @@ public class ChoixJoueur extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @param controle instance du contrôleur
 	 */
 	public ChoixJoueur(Controle controle) {
 		setTitle("Choice");
@@ -100,6 +98,7 @@ public class ChoixJoueur extends JFrame {
 		contentPane.setLayout(null);
 		this.getContentPane().setPreferredSize(new Dimension(400, 275));
 		this.pack();
+
 		lblPersonnage = new JLabel("");
 		lblPersonnage.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPersonnage.setBounds(144, 113, 118, 123);
@@ -122,7 +121,6 @@ public class ChoixJoueur extends JFrame {
 			public void mouseEntered(MouseEvent e) {
 				sourisDoigt();
 			}
-
 			@Override
 			public void mouseExited(MouseEvent e) {
 				sourisNormale();
@@ -141,7 +139,6 @@ public class ChoixJoueur extends JFrame {
 			public void mouseEntered(MouseEvent e) {
 				sourisDoigt();
 			}
-
 			@Override
 			public void mouseExited(MouseEvent e) {
 				sourisNormale();
@@ -160,7 +157,6 @@ public class ChoixJoueur extends JFrame {
 			public void mouseEntered(MouseEvent e) {
 				sourisDoigt();
 			}
-
 			@Override
 			public void mouseExited(MouseEvent e) {
 				sourisNormale();
@@ -169,10 +165,10 @@ public class ChoixJoueur extends JFrame {
 
 		JLabel lblFond = new JLabel("");
 		lblFond.setBounds(0, 0, 400, 275);
-		String chemin = "fonds/fondchoix.jpg";
-		URL resource = getClass().getClassLoader().getResource(chemin);
+		URL resource = getClass().getClassLoader().getResource(FONDCHOIX);
 		lblFond.setIcon(new ImageIcon(resource));
 		contentPane.add(lblFond);
+
 		this.controle = controle;
 		this.affichePerso();
 	}
