@@ -30,6 +30,7 @@ public class Controle implements AsyncResponse, Global {
 
 	/**
 	 * Événement provenant de la frame EntreeJeu
+	 * 
 	 * @param info "serveur" si Start, ou l'IP si Connect
 	 */
 	public void evenementEntreeJeu(String info) {
@@ -47,6 +48,7 @@ public class Controle implements AsyncResponse, Global {
 
 	/**
 	 * Événement provenant de la frame ChoixJoueur
+	 * 
 	 * @param pseudo   pseudo saisi
 	 * @param numPerso numéro du personnage choisi
 	 */
@@ -57,15 +59,21 @@ public class Controle implements AsyncResponse, Global {
 	}
 
 	/**
-	 * Événement provenant de la frame Arene (phrase saisie dans le tchat)
-	 * @param info phrase saisie
+	 * Événement provenant de la frame Arene
+	 * 
+	 * @param info phrase du tchat (String) ou touche utilisée (Integer)
 	 */
-	public void evenementArene(String info) {
-		((JeuClient) this.leJeu).envoi(TCHAT + SEPARATOR + info);
+	public void evenementArene(Object info) {
+		if (info instanceof String) {
+			((JeuClient) this.leJeu).envoi(TCHAT + SEPARATOR + info);
+		} else if (info instanceof Integer) {
+			((JeuClient) this.leJeu).envoi(ACTION + SEPARATOR + info);
+		}
 	}
 
 	/**
 	 * Événement provenant de JeuServeur
+	 * 
 	 * @param ordre ce qu'il faut faire
 	 * @param info  information à traiter
 	 */
@@ -86,6 +94,7 @@ public class Controle implements AsyncResponse, Global {
 
 	/**
 	 * Événement provenant de JeuClient
+	 * 
 	 * @param ordre ce qu'il faut faire
 	 * @param info  information à traiter
 	 */
@@ -96,13 +105,16 @@ public class Controle implements AsyncResponse, Global {
 			this.frmArene.setJpnJeu((JPanel) info);
 		} else if (ordre.equals(MODIFTCHAT)) {
 			this.frmArene.setTxtChat((String) info);
+		} else if (ordre.equals(JOUESON)) {
+			this.frmArene.joueSon((Integer) info);
 		}
 	}
 
 	/**
 	 * Envoi d'une information vers l'ordinateur distant
+	 * 
 	 * @param connection connexion vers l'ordinateur distant
-	 * @param info information à envoyer
+	 * @param info       information à envoyer
 	 */
 	public void envoi(Connection connection, Object info) {
 		connection.envoi(info);
@@ -110,6 +122,7 @@ public class Controle implements AsyncResponse, Global {
 
 	/**
 	 * Méthode d'entrée dans l'application
+	 * 
 	 * @param args non utilisé
 	 */
 	public static void main(String[] args) {
@@ -121,12 +134,12 @@ public class Controle implements AsyncResponse, Global {
 		switch (ordre) {
 		case "connexion":
 			if (!(this.leJeu instanceof JeuServeur)) {
+				this.leJeu = new JeuClient(this);
+				this.leJeu.connexion(connection);
 				this.frmEntreeJeu.dispose();
 				this.frmArene = new Arene(this, CLIENT);
 				this.frmChoixJoueur = new ChoixJoueur(this);
 				this.frmChoixJoueur.setVisible(true);
-				this.leJeu = new JeuClient(this);
-				this.leJeu.connexion(connection);
 			} else {
 				this.leJeu.connexion(connection);
 			}
@@ -135,6 +148,7 @@ public class Controle implements AsyncResponse, Global {
 			this.leJeu.reception(connection, info);
 			break;
 		case "deconnexion":
+			this.leJeu.deconnexion(connection);
 			break;
 		}
 	}

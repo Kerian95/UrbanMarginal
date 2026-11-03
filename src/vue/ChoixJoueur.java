@@ -17,6 +17,7 @@ import javax.swing.SwingConstants;
 
 import controleur.Controle;
 import controleur.Global;
+import outils.son.Son;
 
 public class ChoixJoueur extends JFrame implements Global {
 
@@ -26,11 +27,19 @@ public class ChoixJoueur extends JFrame implements Global {
 	private Controle controle;
 	private JLabel lblPersonnage;
 	private int numPerso = 1;
+	/**
+	 * sons de la fenêtre
+	 */
+	private Son welcome;
+	private Son precedent;
+	private Son suivant;
+	private Son go;
 
 	/**
 	 * Clic sur la flèche précédent
 	 */
 	private void lblPrecedent_clic() {
+		this.precedent.play();
 		this.numPerso--;
 		if (this.numPerso < 1) {
 			this.numPerso = MAXPERSO;
@@ -42,6 +51,7 @@ public class ChoixJoueur extends JFrame implements Global {
 	 * Clic sur la flèche suivant
 	 */
 	private void lblSuivant_clic() {
+		this.suivant.play();
 		this.numPerso++;
 		if (this.numPerso > MAXPERSO) {
 			this.numPerso = 1;
@@ -57,6 +67,7 @@ public class ChoixJoueur extends JFrame implements Global {
 			JOptionPane.showMessageDialog(null, "La saisie du pseudo est obligatoire");
 			this.txtPseudo.requestFocus();
 		} else {
+			this.go.play();
 			this.controle.evenementChoixJoueur(this.txtPseudo.getText(), this.numPerso);
 		}
 	}
@@ -86,6 +97,7 @@ public class ChoixJoueur extends JFrame implements Global {
 
 	/**
 	 * Create the frame.
+	 * 
 	 * @param controle instance du contrôleur
 	 */
 	public ChoixJoueur(Controle controle) {
@@ -117,10 +129,12 @@ public class ChoixJoueur extends JFrame implements Global {
 			public void mouseClicked(MouseEvent e) {
 				lblPrecedent_clic();
 			}
+
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				sourisDoigt();
 			}
+
 			@Override
 			public void mouseExited(MouseEvent e) {
 				sourisNormale();
@@ -135,10 +149,12 @@ public class ChoixJoueur extends JFrame implements Global {
 			public void mouseClicked(MouseEvent e) {
 				lblSuivant_clic();
 			}
+
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				sourisDoigt();
 			}
+
 			@Override
 			public void mouseExited(MouseEvent e) {
 				sourisNormale();
@@ -153,10 +169,12 @@ public class ChoixJoueur extends JFrame implements Global {
 			public void mouseClicked(MouseEvent e) {
 				lblGo_clic();
 			}
+
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				sourisDoigt();
 			}
+
 			@Override
 			public void mouseExited(MouseEvent e) {
 				sourisNormale();
@@ -171,5 +189,12 @@ public class ChoixJoueur extends JFrame implements Global {
 
 		this.controle = controle;
 		this.affichePerso();
+
+		// sons
+		welcome = new Son(getClass().getClassLoader().getResource(SONWELCOME));
+		precedent = new Son(getClass().getClassLoader().getResource(SONPRECEDENT));
+		suivant = new Son(getClass().getClassLoader().getResource(SONSUIVANT));
+		go = new Son(getClass().getClassLoader().getResource(SONGO));
+		welcome.play();
 	}
 }

@@ -41,11 +41,15 @@ public class JeuClient extends Jeu implements Global {
 			}
 		} else if (info instanceof String) {
 			this.controle.evenementJeuClient(MODIFTCHAT, info);
+		} else if (info instanceof Integer) {
+			this.controle.evenementJeuClient(JOUESON, info);
 		}
 	}
 
 	@Override
-	public void deconnexion() {
+	public void deconnexion(Connection connection) {
+		// le serveur est parti : on arrête l'application
+		System.exit(0);
 	}
 
 	/**

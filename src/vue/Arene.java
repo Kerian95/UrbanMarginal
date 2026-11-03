@@ -16,6 +16,7 @@ import javax.swing.ScrollPaneConstants;
 
 import controleur.Controle;
 import controleur.Global;
+import outils.son.Son;
 
 public class Arene extends JFrame implements Global {
 
@@ -28,7 +29,7 @@ public class Arene extends JFrame implements Global {
 	 */
 	private JPanel jpnMurs;
 	/**
-	 * panel contenant les joueurs (et plus tard les boules)
+	 * panel contenant les joueurs et les boules
 	 */
 	private JPanel jpnJeu;
 	/**
@@ -39,6 +40,10 @@ public class Arene extends JFrame implements Global {
 	 * vrai si c'est l'arène d'un client
 	 */
 	private boolean client;
+	/**
+	 * sons du jeu (tir, blessé, mort)
+	 */
+	private Son[] lesSons = new Son[SON.length];
 
 	/**
 	 * @return le panel des murs
@@ -73,6 +78,7 @@ public class Arene extends JFrame implements Global {
 		this.jpnJeu.removeAll();
 		this.jpnJeu.add(jpnJeu);
 		this.jpnJeu.repaint();
+		this.contentPane.requestFocus();
 	}
 
 	/**
@@ -103,7 +109,7 @@ public class Arene extends JFrame implements Global {
 	}
 
 	/**
-	 * Ajoute un label (joueur, message...) dans le panel du jeu (côté serveur)
+	 * Ajoute un label (joueur, message, boule) dans le panel du jeu (côté serveur)
 	 * 
 	 * @param jLabel label à ajouter
 	 */
@@ -123,6 +129,15 @@ public class Arene extends JFrame implements Global {
 	}
 
 	/**
+	 * Joue un son (côté client)
+	 * 
+	 * @param numSon numéro du son (FIGHT, HURT ou DEATH)
+	 */
+	public void joueSon(Integer numSon) {
+		this.lesSons[numSon].play();
+	}
+
+	/**
 	 * Touche appuyée dans la zone de saisie
 	 * 
 	 * @param e touche appuyée
@@ -133,6 +148,28 @@ public class Arene extends JFrame implements Global {
 				this.controle.evenementArene(this.txtSaisie.getText());
 				this.txtSaisie.setText("");
 			}
+			this.contentPane.requestFocus();
+		}
+	}
+
+	/**
+	 * Touche appuyée dans l'arène (flèches et barre d'espace)
+	 * 
+	 * @param e touche appuyée
+	 */
+	private void contentPane_KeyPressed(KeyEvent e) {
+		int touche = -1;
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_LEFT:
+		case KeyEvent.VK_RIGHT:
+		case KeyEvent.VK_UP:
+		case KeyEvent.VK_DOWN:
+		case KeyEvent.VK_SPACE:
+			touche = e.getKeyCode();
+			break;
+		}
+		if (touche != -1) {
+			this.controle.evenementArene(touche);
 		}
 	}
 
@@ -150,6 +187,14 @@ public class Arene extends JFrame implements Global {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
+		if (this.client) {
+			contentPane.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					contentPane_KeyPressed(e);
+				}
+			});
+		}
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		this.getContentPane().setPreferredSize(new Dimension(LARGEURARENE, HAUTEURARENE + 25 + 140));
@@ -190,6 +235,15 @@ public class Arene extends JFrame implements Global {
 
 		txtChat = new JTextArea();
 		txtChat.setEditable(false);
+		if (this.client) {
+			// les flèches restent actives même si on a cliqué dans le tchat
+			txtChat.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					contentPane_KeyPressed(e);
+				}
+			});
+		}
 		jspChat.setViewportView(txtChat);
 
 		JLabel lblFond = new JLabel("");
@@ -197,5 +251,12 @@ public class Arene extends JFrame implements Global {
 		URL resource = getClass().getClassLoader().getResource(FONDARENE);
 		lblFond.setIcon(new ImageIcon(resource));
 		contentPane.add(lblFond);
+
+		// chargement des sons (uniquement pour un client)
+		if (this.client) {
+			for (int k = 0; k < SON.length; k++) {
+				lesSons[k] = new Son(getClass().getClassLoader().getResource(SON[k]));
+			}
+		}
 	}
 }

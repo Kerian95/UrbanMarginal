@@ -1,6 +1,7 @@
 package modele;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 
 import javax.swing.JLabel;
@@ -30,6 +31,13 @@ public class JeuServeur extends Jeu implements Global {
 		this.controle = controle;
 	}
 
+	/**
+	 * @return la collection des joueurs (sans les connexions)
+	 */
+	public Collection<Joueur> getLesJoueurs() {
+		return this.lesJoueurs.values();
+	}
+
 	@Override
 	public void connexion(Connection connection) {
 		this.lesJoueurs.put(connection, new Joueur(this));
@@ -53,11 +61,21 @@ public class JeuServeur extends Jeu implements Global {
 			String phrase = this.lesJoueurs.get(connection).getPseudo() + " > " + message[1];
 			this.controle.evenementJeuServeur(AJOUTPHRASE, phrase);
 			break;
+		case ACTION:
+			Integer action = Integer.parseInt(message[1]);
+			this.lesJoueurs.get(connection).action(action, this.lesJoueurs.values(), this.lesMurs);
+			break;
 		}
 	}
 
 	@Override
-	public void deconnexion() {
+	public void deconnexion(Connection connection) {
+		// on retire d'abord le joueur, pour ne plus rien envoyer sur sa connexion
+		// fermée
+		Joueur joueur = this.lesJoueurs.remove(connection);
+		if (joueur != null) {
+			joueur.departJoueur();
+		}
 	}
 
 	/**
@@ -67,12 +85,15 @@ public class JeuServeur extends Jeu implements Global {
 	 */
 	public void envoi(Object info) {
 		for (Connection connection : this.lesJoueurs.keySet()) {
-			super.envoi(connection, info);
+			// uniquement aux joueurs entrés dans l'arène (pseudo déjà reçu)
+			if (this.lesJoueurs.get(connection).getPseudo() != null) {
+				super.envoi(connection, info);
+			}
 		}
 	}
 
 	/**
-	 * Demande d'ajout d'un label (joueur, message...) dans l'arène du serveur
+	 * Demande d'ajout d'un label (joueur, message, boule) dans l'arène du serveur
 	 * 
 	 * @param jLabel label à ajouter
 	 */
@@ -85,7 +106,10 @@ public class JeuServeur extends Jeu implements Global {
 	 */
 	public void envoiJeuATous() {
 		for (Connection connection : this.lesJoueurs.keySet()) {
-			this.controle.evenementJeuServeur(MODIFPANELJEU, connection);
+			// uniquement aux joueurs entrés dans l'arène (pseudo déjà reçu)
+			if (this.lesJoueurs.get(connection).getPseudo() != null) {
+				this.controle.evenementJeuServeur(MODIFPANELJEU, connection);
+			}
 		}
 	}
 

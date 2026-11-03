@@ -11,6 +11,7 @@ public interface Global {
 	String SEPARATOR = "~";
 	String PSEUDO = "pseudo";
 	String TCHAT = "tchat";
+	String ACTION = "action";
 	// chemins
 	String CHEMINSEPARATOR = "/";
 	String CHEMINFONDS = "fonds" + CHEMINSEPARATOR;
@@ -21,6 +22,21 @@ public interface Global {
 	String EXTFICHIERPERSO = ".gif";
 	String CHEMINMURS = "murs" + CHEMINSEPARATOR;
 	String MUR = CHEMINMURS + "mur.gif";
+	String CHEMINBOULES = "boules" + CHEMINSEPARATOR;
+	String BOULE = CHEMINBOULES + "boule.gif";
+	// sons
+	String CHEMINSONS = "sons" + CHEMINSEPARATOR;
+	String SONWELCOME = CHEMINSONS + "welcome.wav";
+	String SONPRECEDENT = CHEMINSONS + "precedent.wav";
+	String SONSUIVANT = CHEMINSONS + "suivant.wav";
+	String SONGO = CHEMINSONS + "go.wav";
+	String SONFIGHT = CHEMINSONS + "fight.wav";
+	String SONHURT = CHEMINSONS + "hurt.wav";
+	String SONDEATH = CHEMINSONS + "death.wav";
+	String[] SON = { SONFIGHT, SONHURT, SONDEATH };
+	int FIGHT = 0;
+	int HURT = 1;
+	int DEATH = 2;
 	// personnages
 	int MAXPERSO = 3;
 	int HAUTEURPERSO = 44;
@@ -30,8 +46,15 @@ public interface Global {
 	String MARCHE = "marche";
 	String TOUCHE = "touche";
 	String MORT = "mort";
+	int NBETAPESMARCHE = 4;
+	int NBETAPESTOUCHE = 2;
+	int NBETAPESMORT = 2;
 	int GAUCHE = 0;
 	int DROITE = 1;
+	int PAS = 10;
+	// boule
+	int LARGEURBOULE = 17;
+	int HAUTEURBOULE = 17;
 	// arène et murs
 	int HAUTEURARENE = 600;
 	int LARGEURARENE = 800;
@@ -45,4 +68,5 @@ public interface Global {
 	String MODIFPANELJEU = "modif panel jeu";
 	String AJOUTPHRASE = "ajout phrase";
 	String MODIFTCHAT = "modif tchat";
+	String JOUESON = "joue son";
 }
